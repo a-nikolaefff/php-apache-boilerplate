@@ -18,3 +18,9 @@ php:
 
 apache:
 	docker-compose exec apache /bin/bash
+
+mysql:
+	docker-compose exec mysql /bin/bash
+
+pgsql:
+	docker-compose exec pgsql /bin/bash
