@@ -1,0 +1,14 @@
+{
+  "name": "anikolaefff/php-docker-boilerplate",
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
+    }
+  },
+  "authors": [
+    {
+      "name": "anikolaefff"
+    }
+  ],
+  "require": {}
+}

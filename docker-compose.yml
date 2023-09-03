@@ -1,0 +1,62 @@
+version: '3'
+services:
+
+# Apache
+  apache:
+    image: httpd:2.4
+    restart: unless-stopped
+    volumes:
+      - ./src:/var/www
+      - ./docker/apache/config/httpd.conf:/usr/local/apache2/conf/httpd.conf
+    ports:
+      - "8080:80"
+      - "8433:443"
+    depends_on:
+      - php
+
+# PHP
+  php:
+    build:
+      context: docker/php
+      args:
+        - UID=${LOCAL_UID:-1000}
+        - GID=${LOCAL_GID:-1000}
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./src:/var/www
+      - ./docker/php/config/php.ini:/usr/local/etc/php/conf.d/php.ini
+      - ./docker/php/config/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
+# MySQL
+  mysql:
+    image: mysql:5.7
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "${MYSQL_PORT}:3306"
+    volumes:
+      - ./databases/mysql/data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: "${MYSQL_DATABASE}"
+      MYSQL_ROOT_PASSWORD: "${MYSQL_PASSWORD}"
+
+# PostgreSQL
+  pgsql:
+    build:
+      context: docker/postgresql
+      args:
+        - UID=${LOCAL_UID:-1000}
+        - GID=${LOCAL_GID:-1000}
+    restart: unless-stopped
+    ports:
+      - "${PGSQL_PORT}:5432"
+    volumes:
+      - ./databases/postgresql/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: "${PGSQL_USER}"
+      POSTGRES_PASSWORD: "${PGSQL_PASSWORD}"
+      POSTGRES_DB: "${PGSQL_DB}"
+
+
